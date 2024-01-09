@@ -1,0 +1,8 @@
+README.md
+setup.py
+nAdjPval/__init__.py
+nAdjPval/main.py
+nAdjPval.egg-info/PKG-INFO
+nAdjPval.egg-info/SOURCES.txt
+nAdjPval.egg-info/dependency_links.txt
+nAdjPval.egg-info/top_level.txt

@@ -1,3 +1,10 @@
+Metadata-Version: 2.1
+Name: nAdjPval
+Version: 1.0
+Author: Jonathan Gendron
+Author-email: jegendron@gmail.com
+Description-Content-Type: text/markdown
+
 # nAdjPval Package
 In the face of the Large N problem, this package reports what your p-values would be if your sample was instead shrunk to $n = 100$. 
 
