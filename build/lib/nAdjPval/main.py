@@ -89,6 +89,9 @@ def nAdjPval(reg1):
         print("Incorrect input type.")
         print("Please ensure you are inputting 1 regression result (i.e: input = sm.OLS(y, X).fit())")
         print()
+        print("NOTE: You can use the function: nAdjCalc(n,tScore), if you want to directly input your tScores as the following:")
+        print("(integers, floats, dataframes, series, lists (with only numbers), or single-column arrays)")
+        print()
 
     except TypeError:
         print("Correct input type, but incorrect amount of inputs.")
@@ -99,13 +102,99 @@ def nAdjPval(reg1):
     #    print("Please ensure you are only inputting 1 regression result (i.e: input = sm.OLS(y, X).fit())")
 
 #%%
+#"""
+def nAdjCalc(n,tScore): #,numVars
+    import numpy as np
+    import scipy.stats       
+    import pandas as pd
+    pd.options.mode.chained_assignment = None  # default='warn'
+    
+    # Here we're going to change the t-score to if the sample was 100 (i.e. NOT overpowered)
+    n2 = 100
+    
+    # Calculates the difference in the t-score (solely driven by sample size)
+    percDiff = np.sqrt(n2)/np.sqrt(n)
 
-#df = nAdjPval(reg1)
 
 
+    # If a single number
+    if(isinstance(tScore, float)==True or isinstance(tScore, int)==True):
+        # Basic 1 pvalue calculator      
+        tStat2 = tScore*percDiff
+        newPval = scipy.stats.t.sf(abs(tStat2), df=n2-1-1)*2
+        
+        return newPval
+    
+    # If a 1 column dataframe
+    elif(isinstance(tScore, pd.DataFrame)==True and isinstance(tScore[0][0], float) == True):
+        newPvals=tScore.copy()
+        newPvals.rename(columns = {0:'p-Values'},inplace=True)
+               
+        for i in tScore.index:
+            tStat2 = tScore[0][i]*percDiff
+            newPvals['p-Values'][i] = scipy.stats.t.sf(abs(tStat2), df=n2-(len(tScore))-1)*2
+
+        return newPvals
+
+    # If a series
+    elif(isinstance(tScore, pd.Series)==True):
+        newPvals=tScore.copy()
+              
+        for i in tScore.index:
+            tStat2 = tScore[i]*percDiff
+            newPvals[i]=scipy.stats.t.sf(abs(tStat2), df=n2-(len(tScore))-1)*2
+
+        return newPvals
+
+    # If a list (with ONLY floats or ints)
+    elif(type(tScore) is list):
+        newPvals=tScore
+        
+        for i in range(len(tScore)):
+            if(isinstance(tScore[i], float)==True or isinstance(tScore[i], int)==True):
+                tStat2 = tScore[i]*percDiff            
+                newPvals[i]=scipy.stats.t.sf(abs(tStat2), df=n2-(len(tScore))-1)*2
+            else:               
+                newPvals="ERROR: There should only be numbers in your list, one of your list elements are not a number"
+                print(newPvals)
+                print()
+
+        return newPvals
+                    
+    # If an array
+    elif(isinstance(tScore, np.ndarray)==True and str(tScore.shape)[-2:] == ",)"):
+    # The 2nd condition captures if an array has more than 1 column
+        # [1 column arrays end with ",)", while 2+ column arrays end with ")"]
+        
+        newPvals=tScore
+        
+        for i in range(len(tScore)):
+            if(isinstance(tScore[i], float)==True or isinstance(tScore[i], int)==True):
+                tStat2 = tScore[i]*percDiff            
+                newPvals[i]=scipy.stats.t.sf(abs(tStat2), df=n2-(len(tScore))-1)*2
+
+        return newPvals
+
+    elif(isinstance(tScore, np.ndarray)==True and str(tScore.shape)[-2:] != ",)"):
+        print("ERROR: This function only accepts 1 column arrays.")
+        print()
+        
+        return "ERROR: This function only accepts 1 column arrays"
+
+    else:
+        print()
+        print("ERROR: Datatype incorrect.")
+        print("The only acceptable data types are either a single number (float or integer), or a single column of numbers (dataframe, series, list, or array).")
+        print()
+        print("NOTE: You can use the function: nAdjPval(regResults), if you want to input your regression results directly.")
+        print()
+       
+#"""
+
+#%%
 
 ################################################################################
-### DEBUGGING
+### DEBUGGING (nAdjPval)
 ################################################################################
 
 # Successful Exceptions
